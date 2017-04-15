@@ -15,7 +15,9 @@ def TFKMeansCluster(vectors, noofclusters):
     assert noofclusters < len(vectors)
 
     # Find out the dimensionality
-    dim = len(vectors[0])
+    #dim = len(vectors[0])
+    #dim = [65, 65, 3]
+    dim = [65, 65, 3]
 
     # Will help select random centroids from among the available vectors
     vector_indices = list(range(len(vectors)))
@@ -43,7 +45,7 @@ def TFKMeansCluster(vectors, noofclusters):
                      for i in range(noofclusters)]
         ##These nodes will assign the centroid Variables the appropriate
         ##values
-        centroid_value = tf.placeholder("float64", [dim])
+        centroid_value = tf.placeholder("float64", dim)
         cent_assigns = []
         for centroid in centroids:
             cent_assigns.append(tf.assign(centroid, centroid_value))
@@ -61,17 +63,16 @@ def TFKMeansCluster(vectors, noofclusters):
 
         ##Now lets construct the node that will compute the mean
         # The placeholder for the input
-        mean_input = tf.placeholder("float", [None, dim])
+        mean_input = tf.placeholder("float", dim)
         # The Node/op takes the input and computes a mean along the 0th
         # dimension, i.e. the list of input vectors
         mean_op = tf.reduce_mean(mean_input, 0)
 
         ##Node for computing Euclidean distances
         # Placeholders for input
-        v1 = tf.placeholder("float", [dim])
-        v2 = tf.placeholder("float", [dim])
-        euclid_dist = tf.sqrt(tf.reduce_sum(tf.pow(tf.sub(
-            v1, v2), 2)))
+        v1 = tf.placeholder("float", dim)
+        v2 = tf.placeholder("float", dim)
+        euclid_dist = tf.sqrt(tf.reduce_sum(tf.pow(tf.subtract(v1, v2), 2)))
 
         ##This node will figure out which cluster to assign a vector to,
         ##based on Euclidean distances of the vector from the centroids.
