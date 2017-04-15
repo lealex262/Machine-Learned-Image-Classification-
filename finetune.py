@@ -50,6 +50,10 @@ def main():
     # create a saver
     saver = tf.train.Saver()
 
+    #Create Confusion matrix
+    confusionMatrix = np.zeros((5, 5))
+    confusionTotal = [0, 0, 0, 0, 0]
+
     #Run Session
     with tf.Session() as sess:
         print('Init variable')
@@ -76,6 +80,10 @@ def main():
                 test_acc = 0.
                 test_count = 0
 
+                confusionMatrix = np.zeros((5, 5))
+                confusionTotal = [0, 0, 0, 0, 0]
+                validPredLabel_count = 0
+
                 for _ in range(int(dataset.test_size / batch_size)):
                     batch_tx, batch_ty = dataset.next_batch(batch_size, 'test')
                     acc, pred_label, actual_label = sess.run((accuracy, tf.argmax(pred, 1), tf.argmax(y, 1)),
@@ -83,8 +91,22 @@ def main():
                     test_acc += acc
                     test_count += 1
 
+                    if (max(pred_label) >= 5):
+                        continue
+                    validPredLabel_count += 1
+                    i = 0
+                    while i < len(pred_label):
+                            confusionMatrix[pred_label[i]][actual_label[i]] += 1
+                            confusionTotal[actual_label[i]] += 1
+                            i += 1
+
                 test_acc /= test_count
                 print(sys.stderr, "Iter {}: Testing Accuracy = {:.4f}".format(step, test_acc))
+                print(validPredLabel_count)
+                for row in range(10):
+                    for col in range(10):
+                        confusionMatrix[row][col] = round((confusionMatrix[row][col] / validPredLabel_count), 2)
+                print(confusionMatrix)
 
             # Display training status
             if step % display_step == 0:
