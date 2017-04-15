@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from scipy.misc import imread, imresize
 import cv2
 
@@ -37,6 +38,15 @@ class Dataset:
         self.scale_size = 256
         self.mean = np.array([104., 117., 124.])
         self.n_classes = 5
+
+        # produce results parameters
+        test_images_path = "ImagesTest/"
+        self.final_test_images = []
+        for folder in os.listdir(test_images_path):
+            for filename in os.listdir(folder):
+                self.final_test_images.append(filename)
+        self.final_test_size = len(self.final_test_images)
+        self.final_test_ptr = 0;
 
     def next_batch(self, batch_size, phase):
         # Get next batch of image (path) and labels
@@ -90,3 +100,30 @@ class Dataset:
             one_hot_labels[i][labels[i]] = 1
         return images, one_hot_labels
 
+    def next_batch_test(self, batch_size):
+        if self.final_test_ptrt + batch_size < self.final_test_size:
+            paths = self.final_test_images[self.final_test_ptr:self.final_test_ptr + batch_size]
+            self.test_ptr += batch_size
+        else:
+            new_ptr = (self.final_test_ptr + batch_size) % self.final_test_size
+            paths = self.final_test_images[self.final_test_ptr:] + self.final_test_images[:new_ptr]
+            self.final_test_ptr = new_ptr
+
+        images = np.ndarray([batch_size, self.crop_size, self.crop_size, 3])
+        for i in range(len(paths)):
+            img = imread(paths[i])
+            # cv2.imshow("org", img)
+
+
+            if (len(img.shape) == 3):
+                if (img.shape[2] == 3):
+                    img = imresize(img, (self.scale_size, self.scale_size))
+                    img = img.astype(np.float32)
+                    img -= self.mean
+                    # print(img.shape)
+                    shift = int((self.scale_size - self.crop_size) / 2)
+                    img_crop = img[shift:shift + self.crop_size, shift:shift + self.crop_size, :]
+
+                    images[i] = img_crop
+
+        return images, paths
