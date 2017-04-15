@@ -102,6 +102,11 @@ def main():
 
                 test_acc /= test_count
                 print(sys.stderr, "Iter {}: Testing Accuracy = {:.4f}".format(step, test_acc))
+                print(validPredLabel_count)
+                for row in range(10):
+                    for col in range(10):
+                        confusionMatrix[row][col] = round((confusionMatrix[row][col] / validPredLabel_count), 2)
+                print(confusionMatrix)
 
             # Display training status
             if step % display_step == 0:
