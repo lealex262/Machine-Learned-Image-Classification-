@@ -41,14 +41,17 @@ def TFKMeansCluster(vectors, noofclusters):
 
         ##First lets ensure we have a Variable vector for each centroid,
         ##initialized to one of the vectors from the available data points
-        centroids = [tf.Variable((vectors[vector_indices[i]]))
+        centroids = [tf.Variable((vectors[vector_indices[i]][0]))
                      for i in range(noofclusters)]
+
+
         ##These nodes will assign the centroid Variables the appropriate
         ##values
         centroid_value = tf.placeholder("float64", dim)
         cent_assigns = []
         for centroid in centroids:
             cent_assigns.append(tf.assign(centroid, centroid_value))
+
 
         ##Variables for cluster assignments of individual vectors(initialized
         ##to 0 at first)
@@ -63,7 +66,7 @@ def TFKMeansCluster(vectors, noofclusters):
 
         ##Now lets construct the node that will compute the mean
         # The placeholder for the input
-        mean_input = tf.placeholder("float", dim)
+        mean_input = tf.placeholder("float", [None] + dim)
         # The Node/op takes the input and computes a mean along the 0th
         # dimension, i.e. the list of input vectors
         mean_op = tf.reduce_mean(mean_input, 0)
@@ -86,7 +89,8 @@ def TFKMeansCluster(vectors, noofclusters):
         ##to the graph. The Variable-initializer should be defined after
         ##all the Variables have been constructed, so that each of them
         ##will be included in the initialization.
-        init_op = tf.initialize_all_variables()
+        init_op = tf.global_variables_initializer()
+
 
         # Initialize all variables
         sess.run(init_op)
@@ -104,11 +108,15 @@ def TFKMeansCluster(vectors, noofclusters):
             ##the _expected_ centroid assignments.
             # Iterate over each vector
             for vector_n in range(len(vectors)):
-                vect = vectors[vector_n]
+                vect = vectors[vector_n][0]
+
                 # Compute Euclidean distance between this vector and each
                 # centroid. Remember that this list cannot be named
                 # 'centroid_distances', since that is the input to the
                 # cluster assignment node.
+                #print("Vect: " + str(vect))
+                #print("Centroid: " + str(centroids[0]))
+
                 distances = [sess.run(euclid_dist, feed_dict={
                     v1: vect, v2: sess.run(centroid)})
                              for centroid in centroids]
@@ -126,7 +134,7 @@ def TFKMeansCluster(vectors, noofclusters):
             # overall objective of minimizing within-cluster Sum-of-Squares
             for cluster_n in range(noofclusters):
                 # Collect all the vectors assigned to this cluster
-                assigned_vects = [vectors[i] for i in range(len(vectors))
+                assigned_vects = [vectors[i][0] for i in range(len(vectors))
                                   if sess.run(assignments[i]) == cluster_n]
                 # Compute new centroid location
                 new_location = sess.run(mean_op, feed_dict={
@@ -138,4 +146,4 @@ def TFKMeansCluster(vectors, noofclusters):
         # Return centroids and assignments
         centroids = sess.run(centroids)
         assignments = sess.run(assignments)
-        return centroids, assignments
+        return centroids, assignments, cluster_assigns

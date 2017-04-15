@@ -7,14 +7,25 @@ from kmeans import TFKMeansCluster
 K = 4
 #DATA_DIR = "../../data/ImagesTrain_Sorted/Outdoors"
 DATA_DIR = "../../data/Outdoors_subset"
+Results = "../../data/KMeans_results"
 
 
 def main():
 
 	vectors = getData()
 
+	#print(vectors[0][0][0][0])
+
 	print("Entering K-Means")
-	TFKMeansCluster(vectors, K)
+	centroids, assignments, cluster_assigns = TFKMeansCluster(vectors, K)
+
+	f = open(Results, 'w')
+	f.write("Centroids: \n" + str(centroids))
+	f.write("Assignments: \n" + str(assignments))
+	f.write("Cluster_assigns: \n" + str(cluster_assigns))
+
+
+
 
 
 
@@ -24,15 +35,15 @@ def getData():
 	vectors = []
 
 	for jpg in os.listdir(DATA_DIR):
-		# print("JPG: " + jpg)
-		image = imread(DATA_DIR + "/" + jpg)
 
-		#print("img shape: " + str(image.shape))
+		image_path = DATA_DIR + "/" + jpg
+		image = imread(image_path)
 
 		image = image.astype(np.float64)
-		#cv2.imshow("a", image)
-		#cv2.waitKey()
-		vectors.append(image);
+
+		if len(image.shape) == 3:
+			vectors.append(tuple([image, image_path]))
+
 
 	# print(vectors)
 	return vectors
