@@ -31,7 +31,7 @@ class Dataset:
         self.test_ptr = 0
         self.train_size = len(self.train_label)
         self.test_size = len(self.test_label)
-        self.crop_size = 227
+        self.crop_size = 65
         self.scale_size = 256
         self.mean = np.array([104., 117., 124.])
         self.n_classes = 20

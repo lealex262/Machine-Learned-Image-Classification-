@@ -30,6 +30,6 @@ class Model:
         fc7 = fc(fc6, 4096, 4096, name='fc7')
         fc7 = dropout(fc7, _dropout)
         # Layer 8 (fc-prob)
-        fc8 = fc(fc7, 4096, 20, relu=False, name='fc8')
+        fc8 = fc(fc7, 4096, 5, relu=False, name='fc8')
         return fc8
         
