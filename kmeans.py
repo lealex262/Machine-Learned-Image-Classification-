@@ -145,5 +145,10 @@ def TFKMeansCluster(vectors, noofclusters):
 
         # Return centroids and assignments
         centroids = sess.run(centroids)
+
+        vect_assigns = []
+        for c in range(noofclusters):
+            vect_assigns.append([vectors[i][1] for i in range(len(vectors)) if sess.run(assignments[i]) == c])
+
         assignments = sess.run(assignments)
-        return centroids, assignments, cluster_assigns
+        return centroids, assignments, vect_assigns
