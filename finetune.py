@@ -9,7 +9,7 @@ from createdatasets import create_data_sets
 def main():
 
     # Learning params
-    learning_rate = 0.0005
+    learning_rate = 0.0003
     training_iters = 6000 # 10 epochs
     batch_size = 10
     display_step = 20
@@ -103,8 +103,8 @@ def main():
                 test_acc /= test_count
                 print(sys.stderr, "Iter {}: Testing Accuracy = {:.4f}".format(step, test_acc))
                 print(validPredLabel_count)
-                for row in range(10):
-                    for col in range(10):
+                for row in range(5):
+                    for col in range(5):
                         confusionMatrix[row][col] = round((confusionMatrix[row][col] / validPredLabel_count), 2)
                 print(confusionMatrix)
 
@@ -117,7 +117,8 @@ def main():
                                                                                      acc))
 
             step += 1
-
+        save_path = saver.save(sess, "model_files/model_final.ckpt")
+        print("model saved in file: ", save_path)
         print("Finish!")
 
 
