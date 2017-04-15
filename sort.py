@@ -1,9 +1,8 @@
-import cv2 as cv
 import os
 
-label_file = "C:/Users/ButlerJacob/GeorgiaTech/Spring2017/HD-Hackathon/data/categoriesTrain.txt"
-image_dir = "C:/Users/ButlerJacob/GeorgiaTech/Spring2017/HD-Hackathon/data/ImagesTrain"
-dst_dir = "C:/Users/ButlerJacob/GeorgiaTech/Spring2017/HD-Hackathon/data/ImagesTrain_Sorted"
+label_file = "C:/Users/Alex Thien An Le/Downloads/categoriesTrain.txt"
+image_dir = "C:/Users/Alex Thien An Le/Downloads/ImagesTrain"
+dst_dir = "C:/Users/Alex Thien An Le/Downloads/ImagesTrain_Sorted"
 
 with open(label_file) as f:
 	count = 0
@@ -32,7 +31,8 @@ with open(label_file) as f:
 
 					if not os.path.isfile(dst):
 						os.rename(src, dst)
-						print("Moved " + str(count))
+						if count%50 == 0:
+							print("Moved " + str(count))
 						count += 1
 
 
