@@ -1,10 +1,10 @@
 import tensorflow as tf
 import numpy as np
 import sys
-
 from dataset import Dataset
 from model import Model
 from network import *
+from createdatasets import create_data_sets
 
 def main():
 
@@ -17,7 +17,7 @@ def main():
     save_step = 1000
 
     #Dataset Path
-
+    create_data_sets()
     train_list = 'train.txt'
     test_list = 'test.txt'
 
@@ -26,7 +26,7 @@ def main():
     keep_rate = 0.5
 
     #Graph input
-    x = tf.placeholder(tf.float32, [batch_size, 65, 65, 3])
+    x = tf.placeholder(tf.float32, [batch_size, 227, 227, 3])
     y = tf.placeholder(tf.float32, [None, n_classes])
     keep_var = tf.placeholder(tf.float32)
 
@@ -55,7 +55,7 @@ def main():
         print('Init variable')
         sess.run(init)
 
-        print('Start training')
+
         step = 1
         # Load pretrained model
         load_with_skip('caffenet.npy', sess, ['fc8'])  # Skip weights from fc8
